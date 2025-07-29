@@ -1,151 +1,104 @@
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 
-#define MAX_CIDADES 10
-#define MAX_CAMINHOS 100
-#define MAX_CAMINHO_TAMANHO 20
+#define MAX 10
+#define MAX_CAM 50
 
-// Enum para representar as cidades, para clareza e menos erro de índice
-typedef enum {
-    CORRENTE,
-    GILBUES,
-    BOM_JESUS,
-    FLORIANO,
-    OEIRAS,
-    TERESINA,
-    CAMPO_MAIOR,
-    PIRIPIRI,
-    LUIS_CORREIA,
-    PARNAIBA
-} Cidade;
-
-const char* nomesCidades[MAX_CIDADES] = {
+char *cidades[MAX] = {
     "Corrente", "Gilbués", "Bom Jesus", "Floriano", "Oeiras",
     "Teresina", "Campo Maior", "Piripiri", "Luís Correia", "Parnaíba"
 };
 
-int matrizAdj[MAX_CIDADES][MAX_CIDADES];
+int grafo[MAX][MAX]; 
 
-int todosCaminhos[MAX_CAMINHOS][MAX_CAMINHO_TAMANHO];
-int tamanhoCaminhos[MAX_CAMINHOS];
-int totalCaminhos = 0;
+int todosCaminhos[MAX_CAM][MAX]; 
+int tamCaminhos[MAX_CAM];        
+int total = 0;                   
 
-int idxMenor = -1;
-int idxMaior = -1;
-
-void inicializarGrafo() {
-    for (int i = 0; i < MAX_CIDADES; i++)
-        for (int j = 0; j < MAX_CIDADES; j++)
-            matrizAdj[i][j] = 0;
-}
-
-void adicionarEstrada(Cidade origem, Cidade destino) {
-    matrizAdj[origem][destino] = 1;
-}
-
-void buscarCaminhosRecursivo(Cidade atual, Cidade destino, int visitados[], int caminho[], int nivel) {
+void busca(int atual, int destino, int visitados[], int caminho[], int nivel) {
     visitados[atual] = 1;
     caminho[nivel] = atual;
     nivel++;
 
     if (atual == destino) {
-        if (totalCaminhos >= MAX_CAMINHOS) {
-            printf("Limite maximo de caminhos alcancado!\n");
-            visitados[atual] = 0;
-            return;
-        }
         for (int i = 0; i < nivel; i++) {
-            todosCaminhos[totalCaminhos][i] = caminho[i];
+            todosCaminhos[total][i] = caminho[i];
         }
-        tamanhoCaminhos[totalCaminhos] = nivel;
-        totalCaminhos++;
+        tamCaminhos[total] = nivel;
+        total++;
     } else {
-        for (int vizinho = 0; vizinho < MAX_CIDADES; vizinho++) {
-            if (matrizAdj[atual][vizinho] && !visitados[vizinho]) {
-                buscarCaminhosRecursivo(vizinho, destino, visitados, caminho, nivel);
+        for (int i = 0; i < MAX; i++) {
+            if (grafo[atual][i] && !visitados[i]) {
+                busca(i, destino, visitados, caminho, nivel);
             }
         }
     }
-
     visitados[atual] = 0; 
 }
 
-void imprimirTodosCaminhos() {
-    printf("\n--- Todos os caminhos encontrados ---\n");
-    for (int i = 0; i < totalCaminhos; i++) {
-        printf("Caminho %d (%d cidades): ", i + 1, tamanhoCaminhos[i]);
-        for (int j = 0; j < tamanhoCaminhos[i]; j++) {
-            printf("%s", nomesCidades[todosCaminhos[i][j]]);
-            if (j < tamanhoCaminhos[i] - 1)
-                printf(" -> ");
+int main() {
+    for (int i = 0; i < MAX; i++)
+        for (int j = 0; j < MAX; j++)
+            grafo[i][j] = 0;
+
+    grafo[0][1] = 1;
+    grafo[1][2] = 1;
+    grafo[2][3] = 1;
+    grafo[3][4] = 1;
+    grafo[4][5] = 1;
+    grafo[5][6] = 1;
+    grafo[6][7] = 1;
+    grafo[7][8] = 1;
+    grafo[8][9] = 1;
+    grafo[5][9] = 1;
+    grafo[2][5] = 1;
+
+    printf("Conexões do grafo:\n");
+    for (int i = 0; i < MAX; i++) {
+        printf("%s -> ", cidades[i]);
+        for (int j = 0; j < MAX; j++) {
+            if (grafo[i][j]) printf("%s ", cidades[j]);
         }
         printf("\n");
     }
-}
 
-void encontrarMenorEMaiorCaminhos() {
-    if (totalCaminhos == 0) return;
+    int visitados[MAX] = {0};
+    int caminho[MAX];
+    busca(0, 9, visitados, caminho, 0);
 
-    idxMenor = 0;
-    idxMaior = 0;
-    for (int i = 1; i < totalCaminhos; i++) {
-        if (tamanhoCaminhos[i] < tamanhoCaminhos[idxMenor]) idxMenor = i;
-        if (tamanhoCaminhos[i] > tamanhoCaminhos[idxMaior]) idxMaior = i;
-    }
-}
-
-void imprimirMenorEMaiorCaminhos() {
-    if (idxMenor == -1 || idxMaior == -1) {
-        printf("Nenhum caminho encontrado.\n");
-        return;
+    printf("\nTodos os caminhos de Corrente até Parnaíba:\n");
+    for (int i = 0; i < total; i++) {
+        printf("Caminho %d (%d cidades): ", i + 1, tamCaminhos[i]);
+        for (int j = 0; j < tamCaminhos[i]; j++) {
+            printf("%s", cidades[todosCaminhos[i][j]]);
+            if (j < tamCaminhos[i] - 1) printf(" -> ");
+        }
+        printf("\n");
     }
 
-    printf("\n--- Caminho mais curto ---\n");
-    printf("(%d cidades): ", tamanhoCaminhos[idxMenor]);
-    for (int i = 0; i < tamanhoCaminhos[idxMenor]; i++) {
-        printf("%s", nomesCidades[todosCaminhos[idxMenor][i]]);
-        if (i < tamanhoCaminhos[idxMenor] - 1)
-            printf(" -> ");
+    if (total > 0) {
+        int menor = 0, maior = 0;
+        for (int i = 1; i < total; i++) {
+            if (tamCaminhos[i] < tamCaminhos[menor]) menor = i;
+            if (tamCaminhos[i] > tamCaminhos[maior]) maior = i;
+        }
+
+        printf("\nMenor caminho (%d cidades): ", tamCaminhos[menor]);
+        for (int j = 0; j < tamCaminhos[menor]; j++) {
+            printf("%s", cidades[todosCaminhos[menor][j]]);
+            if (j < tamCaminhos[menor] - 1) printf(" -> ");
+        }
+        printf("\n");
+
+        printf("Maior caminho (%d cidades): ", tamCaminhos[maior]);
+        for (int j = 0; j < tamCaminhos[maior]; j++) {
+            printf("%s", cidades[todosCaminhos[maior][j]]);
+            if (j < tamCaminhos[maior] - 1) printf(" -> ");
+        }
+        printf("\n");
+    } else {
+        printf("\nNenhum caminho encontrado!\n");
     }
-    printf("\n");
-
-    printf("\n--- Caminho mais longo ---\n");
-    printf("(%d cidades): ", tamanhoCaminhos[idxMaior]);
-    for (int i = 0; i < tamanhoCaminhos[idxMaior]; i++) {
-        printf("%s", nomesCidades[todosCaminhos[idxMaior][i]]);
-        if (i < tamanhoCaminhos[idxMaior] - 1)
-            printf(" -> ");
-    }
-    printf("\n");
-}
-
-int main() {
-    inicializarGrafo();
-
-    adicionarEstrada(CORRENTE, GILBUES);
-    adicionarEstrada(GILBUES, BOM_JESUS);
-    adicionarEstrada(BOM_JESUS, FLORIANO);
-    adicionarEstrada(FLORIANO, OEIRAS);
-    adicionarEstrada(OEIRAS, TERESINA);
-    adicionarEstrada(TERESINA, CAMPO_MAIOR);
-    adicionarEstrada(CAMPO_MAIOR, PIRIPIRI);
-    adicionarEstrada(PIRIPIRI, LUIS_CORREIA);
-    adicionarEstrada(LUIS_CORREIA, PARNAIBA);
-    
-    adicionarEstrada(TERESINA, PARNAIBA);
-    adicionarEstrada(BOM_JESUS, TERESINA);
-
-    int visitados[MAX_CIDADES] = {0};
-    int caminhoAtual[MAX_CAMINHO_TAMANHO];
-    totalCaminhos = 0;
-
-    printf("Buscando todos os caminhos de Corrente a Parnaíba...\n");
-    buscarCaminhosRecursivo(CORRENTE, PARNAIBA, visitados, caminhoAtual, 0);
-
-    imprimirTodosCaminhos();
-    encontrarMenorEMaiorCaminhos();
-    imprimirMenorEMaiorCaminhos();
 
     return 0;
 }
