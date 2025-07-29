@@ -49,26 +49,8 @@ O programa utiliza **Busca em Profundidade (DFS)**:
 ---
 
 ## 📸 Saída
-```
-Conexões do grafo:
-Corrente -> Gilbués 
-Gilbués -> Bom Jesus 
-Bom Jesus -> Floriano Teresina 
-Floriano -> Oeiras 
-Oeiras -> Teresina 
-Teresina -> Campo Maior Parnaíba 
-Campo Maior -> Piripiri 
-Piripiri -> Luís Correia 
-Luís Correia -> Parnaíba 
-Parnaíba -> 
-
-Todos os caminhos de Corrente até Parnaíba:
-Caminho 1 (10 cidades): Corrente -> Gilbués -> Bom Jesus -> Floriano -> Oeiras -> Teresina -> Campo Maior -> Piripiri -> Luís Correia -> Parnaíba
-Caminho 2 (6 cidades): Corrente -> Gilbués -> Bom Jesus -> Teresina -> Parnaíba
-
-Menor caminho (6 cidades): Corrente -> Gilbués -> Bom Jesus -> Teresina -> Parnaíba
-Maior caminho (10 cidades): Corrente -> Gilbués -> Bom Jesus -> Floriano -> Oeiras -> Teresina -> Campo Maior -> Piripiri -> Luís Correia -> Parnaíba
-```
+---
+<img width="1230" height="392" alt="image" src="https://github.com/user-attachments/assets/1bed2daf-5f62-4c27-8d97-2026fda4698b" />
 
 ---
 
